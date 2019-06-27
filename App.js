@@ -126,8 +126,7 @@ export default class App extends React.Component{
               <Text style={styles.helpIcon}>Help</Text>
             </TouchableOpacity>
         </View>
-
-              <PickerComponent  />
+        
         <View>
             <Modal animationType="slide" transparent={false} 
                    visible={this.state.modalVisible}>
