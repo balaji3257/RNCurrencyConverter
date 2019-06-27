@@ -6,7 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  Alert,FlatList, Picker
+  Alert, FlatList, Picker, StatusBar, Modal,Platform,
+  PickerIOS
+
 } from 'react-native';
 
 import { Swiper } from 'react-native-swiper';
@@ -19,14 +21,20 @@ export default class App extends React.Component{
       conversionResult: '0.00',
       inrValue: 0,
       isLoading: true,
-      globalCurrencyRate:null
+      globalCurrencyRate:null,
+      modalVisible: false,
     }
     this.convButtonPressed = this.convButtonPressed.bind(this);
   }
   componentDidMount(){
     this.getRealTimeCurrencyConversionRates();
   }
-
+/**
+ * @description: set the visible propperty for the Modal window
+ */
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
   /**
    * @description : realtime currency conversion rates are fetch from 'api.exchangeratesapi.io'
    */
@@ -95,21 +103,55 @@ export default class App extends React.Component{
   rotateButtonPressed = () => {
 
   }
+  /**
+   * @description: Render Function starts here
+   */
   render(){
+    const PickerComponent = Platform.select({
+      ios: () => <Text>Hello iOS</Text>,
+      android: () => <Text>Hello Android</Text>
+    })
+
     return(
-      <View style={styles.container}> 
+      <View style={styles.container}>
+        <View >
+          <StatusBar style={ styles.statusBar }
+            barStyle="light-content" hidden={false} translucent={true} networkActivityIndicatorVisible={true}
+            />
+        </View>
+
+        <View style={styles.titleBar}>
+            <TouchableOpacity onPress={() => {
+              this.setModalVisible(!this.state.modalVisible)}}>
+              <Text style={styles.helpIcon}>Help</Text>
+            </TouchableOpacity>
+        </View>
+
+              <PickerComponent  />
+        <View>
+            <Modal animationType="slide" transparent={false} 
+                   visible={this.state.modalVisible}>
+              <View style={{marginTop: 22}}>
+                <View>
+                  <TouchableOpacity onPress={() => {
+                      this.setModalVisible(!this.state.modalVisible); }}>
+                      <Text style={styles.closeButton}>close</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+        </View>
 
         <View style={ styles.inputContainer }>
-          <Image style={ styles.inputCurrencyIcon } 
-                source={require('./src/assets/icons/indian.png')}/>
-          <TextInput style={styles.inputText}
-            placeholder="0" placeholderTextColor="black" keyboardType="numeric"
-            onChangeText={this.handleChangeInput} />
+          <TextInput style={styles.inputText} placeholder="Enter amount here" keyboardType="numeric"
+                    onChangeText={this.handleChangeInput} />
         </View>
-          <View style={styles.pickerContainer}>
-            <Text style={styles.fromText}>From:</Text>
+
+        <View style={styles.pickerContainer}>
+            <Text style={styles.fromText}>FROM</Text>
             <Picker selectedValue={this.state.lan}
                     style={styles.languagePicker} itemStyle={styles.lanItem}
+                    mode="dropdown"
                     onValueChange={(itemValue, itemIndex) =>{this.setState({lan: itemValue})}}>
                 <Picker.Item label="USD" value="usDollar" />
                 <Picker.Item label="EUR" value="Euro" />
@@ -120,14 +162,14 @@ export default class App extends React.Component{
 
           <View>
             <TouchableOpacity onPress={() =>{this.rotateButtonPressed}}>
-              <Image source={require('./src/assets/icons/convert.png')}
+              <Image source={require('./src/assets/icons/swap.png')}
                     style={styles.currRotateButton}/>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.pickerContainer}>
-            <Text style={styles.fromText}>To:</Text>
+          <View style={[styles.pickerContainer,{alignSelf:'flex-end'}]}>
             <Picker selectedValue={this.state.lan}
+                  
                     style={styles.languagePicker} itemStyle={styles.lanItem}
                     onValueChange={(itemValue, itemIndex) =>{this.setState({lan: itemValue})}}>
                 <Picker.Item label="USD" value="usDollar" />
@@ -135,81 +177,103 @@ export default class App extends React.Component{
                 <Picker.Item label="INR" value="IndianRupee" />
                 <Picker.Item label="AUD" value="AusDollar" />      
             </Picker>
+            <Text style={styles.fromText}>TO</Text>
           </View>
-        <View style={ styles.convertButtonContainer }>
-              <TouchableOpacity style={styles.buttonContainer}
-                      onPress={()=>this.convButtonPressed('USD')} >
-                <Text style={styles.buttonText}>CONVERT</Text>
-              </TouchableOpacity >
-        </View>
-        <View style={styles.resultContainer}>
-            <Text style={styles.resultText}>2344.99</Text>
-            <Text style={styles.resultCurrenyText}>USD</Text>
-        </View>
         
+          <TouchableOpacity style={styles.convertButtonContainer}
+                  onPress={()=>this.convButtonPressed('USD')} >
+            <Text style={styles.buttonText}>CONVERT</Text>
+          </TouchableOpacity>
+
+        <View style={styles.resultContainer}>
+            <Text style={styles.resultText}>2344.99 EUR</Text>
+            <Text style={styles.resultCurrenyText}>1 USD = 0.90 EUR</Text>
+        </View>
+
   </View>
+
+  
     );
   }
 }
 
 const styles = StyleSheet.create({
+  titleBar:{width:'100%', height: 90, backgroundColor:'#2475B0',
+            justifyContent: 'center'
+      },
+  helpIcon:{
+    color: 'white', fontSize:22, textAlign: 'right',textAlignVertical:'center',
+    alignSelf: 'flex-end', marginTop: 10, marginRight: 20
+  },
   container: {
-    flex: 1, backgroundColor: '#758AA2', alignItems: 'center', padding: 20
+    flex: 1, backgroundColor: '#fff', alignItems: 'center'
   },
   inputContainer:{ 
-    flexDirection: 'row', backgroundColor:'#fff', marginTop: 20, borderRadius: 12,
-    marginVertical: 40, height: 120,justifyContent: 'center', alignItems:'center'
-  },
-  inputCurrencyIcon:{
-    width: 25,height: 25, padding:22, marginLeft: 10, alignSelf: 'center'
+    marginVertical: 40
   },
   inputText:{   
-      flex: 1, color:'black', fontSize: 60, fontWeight: 'bold', paddingRight: 20,textAlign:'right'
-  },
-  
-  buttonText: {
-    fontSize: 24, fontWeight: 'bold', textAlign: 'center', textAlignVertical: 'center',
-  },
-  currSelectionContainer:{
-    width: '100%',
-    borderColor: 'black',
-    borderRadius: 20,
-    borderWidth:2,
-    padding: 20
+      width:350, 
+      borderBottomWidth: 1,
+      borderColor: '#0A79DF',
+      textAlign: 'center',
+      fontSize: 25,
+      fontWeight: 'bold'
   },
   languagePicker:{
-    height: 60, borderWidth: 4, borderColor: 'red', borderRadius: 25, flex: 3, marginLeft: 20
+    flex:3
   },
   lanItem:{
-    fontWeight: 'bold', alignItems:'center'
+    textAlign:'center', textAlignVertical:'center'
   },
   pickerContainer:{
-    alignItems: 'center', justifyContent:'center', flexDirection: 'row',backgroundColor: '#e0f7fa',
-    height: 'auto',
+    width: '70%',  flexDirection: 'row', backgroundColor:'#e0f7fa'
+    , alignSelf:'flex-start',borderRadius: 25
+   
   },
   fromText:{
-    flex:1, fontSize:30, fontWeight:'600', textAlign:'center', textAlignVertical:'center'
+    flex: 1, textAlign:'center', textAlignVertical:'center', fontSize:23, 
+    fontWeight:'500',backgroundColor:'#25CCF7', color:'#fff'
   },
   currRotateButton:{
-    height: 50, width: 50, margin: 20
+    width: 30, height: 30, margin: 20
   },
   convertButtonContainer:{   
-   width: '100%', marginTop: 30
+   marginTop: 40, backgroundColor: '#2475B0', width: '75%', justifyContent: 'center', alignItems:'center'
+   , height: 60, borderRadius: 25, flexDirection: 'row'
   },
-  buttonContainer: {
-    height: 50, borderWidth: 1, backgroundColor: '#26ae60', borderRadius: 12,
-    justifyContent: "center", alignItems: "center",
+  buttonText: {
+    fontSize: 27,
+    fontWeight: '600',
+    color: '#fff'
+  },
+  convertIconContainer:{
+    width: 70, 
+    backgroundColor:'#b2ebf2',
+    height: 70, alignItems: 'center', justifyContent:'center', borderRadius:40, marginLeft: 20
+  },
+  convertIcon:{
+    width: 25, height: 25, alignSelf: 'center'
   },
   resultContainer:{
-      backgroundColor: 'white', width:'100%', height: 120, justifyContent: 'center', alignItems:'center',
-      marginTop: 25, borderRadius: 12
+      marginTop :50,
+      width: '100%' ,
+      justifyContent: 'center',
+      alignItems:'center',
+      padding: 10,
   },
   resultText:{
-    fontSize: 35,
-    fontWeight:'800'
+    fontSize: 45,fontWeight: '600',color: '#ff8f00'
   },
   resultCurrenyText:{
-    fontWeight: '600', fontSize: 20, color: '#EA7773'
-  }
+    fontSize: 18, fontWeight: 'bold', fontStyle:'italic'
+  },
   
+  closeButton:{
+    fontSize:30,
+    fontWeight:'bold',textAlign:'right', marginHorizontal: 30
+  },statusBar:{
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+      }
 });
