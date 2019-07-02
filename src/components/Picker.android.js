@@ -22,13 +22,11 @@ export default class CustomPickerAndroid extends React.Component{
   /**
    * @description: change the state to the modal window
    */
-  toggleModal =(modalState)=>{
+  toggleModal =(modalState) => {
       this.setState({
         isModalVisible: modalState
       });
   }
-
-  
 
   /**
    * @description : realtime currency conversion rates are fetch from 'api.exchangeratesapi.io'
@@ -46,13 +44,6 @@ export default class CustomPickerAndroid extends React.Component{
   }
   
     render(){
-      const Currencies =
-                  [   
-                      "CAD","HKD", "ISK","CNY", "NOK", "NZD", "BRL", "RUB",
-                      "PHP","DKK", "HUF", "CZK","GBP", "RON", "SEK","IDR", "INR",
-                      "HRK", "JPY","THB", "CHF","EUR", "MYR", "BGN", "TRY", 
-                      "ZAR","USD", "MXN","SGD", "AUD", "ILS", "KRW", "PLN"
-                  ]
         return(
                 <View   style={styles.container} >
                   <Text>Behind the Modal window</Text>
