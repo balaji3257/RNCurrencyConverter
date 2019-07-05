@@ -30,7 +30,6 @@ export default class CustomPickerIOS extends React.Component{
                     style={{height: 100, width: 100}}
                 source={{uri:
               'https://aboutreact.com/wp-content/uploads/2018/07/logosmalltransparen.png'}}/>
-                <Text style={styles.splashText}>SplashScreen</Text>
             </View>
         );
     }
