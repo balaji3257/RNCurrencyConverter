@@ -33,22 +33,5 @@ const InitialNavigator = createSwitchNavigator({
   App: AppNavigator
 });
 
-const AppContainer = createAppContainer(InitialNavigator);
-export default class App extends React.Component{
-
-  constructor(props){
-    super(props);
-    this.state={
-      language: '',
-      isLoading: false
-    }
-  }
-    render(){
-        if(this.state.isLoading){
-          return(<SplashScreen/>)
-        }
-        return(
-                <AppContainer/>
-        );
-    }
-}
+const App = createAppContainer(InitialNavigator);
+export default App;
