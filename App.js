@@ -24,7 +24,7 @@ const AppNavigator = createStackNavigator(
     CurrencyConverter
   },
   {
-    initialRouteName: 'PickerComponent'
+    initialRouteName: 'CurrencyConverter'
   }
 );
 

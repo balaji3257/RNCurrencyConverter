@@ -6,11 +6,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-
-
 export default class CustomPickerAndroid extends React.Component{
-
-
   constructor(props){
     super(props);
     this.state={
