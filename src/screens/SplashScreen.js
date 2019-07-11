@@ -11,7 +11,7 @@ export default class CustomPickerIOS extends React.Component{
         return new Promise((resolve) =>{
             setTimeout(
                 () => {resolve('result')},
-                2000
+                1000
             )
         })
     }
@@ -22,6 +22,7 @@ export default class CustomPickerIOS extends React.Component{
             this.props.navigation.navigate('App');
         }
     }
+
 
     render(){
         return(

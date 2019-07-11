@@ -1,66 +1,57 @@
 'use strict'
-/**
- * https://github.com/vikrantnegi/react-native-searchable-flatlist/blob/master/src/SearchableList.js
- */
+
 import React from 'react';
 import {
-    StyleSheet,
-    Text,
-    View,
-    FlatList,
-    TouchableOpacity,
-    TextInput,
-    Image,
-    ActivityIndicator
+    StyleSheet, Text, View, FlatList, TouchableOpacity, TextInput, Image, ActivityIndicator
 } from 'react-native';
+import HelpIcon from '../components/Help';
+
+
+const Currencies =
+    {
+        CAD: 'Canadian dollar',
+        HKD: 'Hong Kong dollar',
+        ISK: 'Icelandic krona',
+        PHP: 'Philippine peso',
+        DKK: 'Danish krone',
+        HUF: 'Hungarian forint',
+        CZK: 'Czech koruna',
+        GBP: 'Pound sterling',
+        RON: 'Romanian leu',
+        SEK: 'Swedish krona	',
+        IDR: 'Indonesian rupiah',
+        INR: 'Indian rupee',
+        BRL: 'Brazilian real',
+        RUB: 'Russian ruble',
+        HRK: 'Croatian kuna',
+        JPY: 'Japanese yen',
+        THB: 'Thai baht	',
+        CHF: 'Swiss franc	',
+        EUR: 'European euro',
+        MYR: 'Malaysian ringgit',
+        BGN: 'Bulgarian lev',
+        TRY: 'Turkish lira',
+        CNY: 'Chinese Yuan Renminbi',
+        NOK: 'Norwegian krone',
+        NZD: 'New Zealand dollar',
+        ZAR: 'South African rand',
+        USD: 'United States dollar',
+        MXN: 'Mexican peso',
+        SGD: 'Singapore dollar',
+        AUD: 'Australian dollar',
+        ILS: 'Israeli new shekel',
+        KRW: 'South Korean won',
+        PLN: 'Polish zloty'
+    }
 
 export default class CurrencyList extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            language: 'Default Value',
-            pickerOpacity: 0,
             loading: false,
-            data: [],
-            error: null
+            currencyTargetId: props.navigation.getParam('targetCurrId')
         };
         this.arrayholder = [];
-    }
-
-    componentDidMount() {
-        this.makeRemoteRequest();
-    }
-
-    /**
-     * @description: Fetch Random user information as JSON data from 'randomuser.me'
-     */
-    makeRemoteRequest = () => {
-        const url = 'https://randomuser.me/api/?&results=5';
-        this.setState({
-            loading: true
-        });
-        fetch(url)
-            .then(res => res.json())
-            .then(res => {
-                this.setState({
-                    data: res.results,
-                    error: res.error || null,
-                    loading: false
-                });
-                this.arrayHolder = res.results;
-            })
-            .catch(error => {
-                this.setState({ error, loading: false })
-            })
-    }
-    /**
-     * @description: Toggle picker by changing the opacity of the picker
-     */
-    togglePicker = () => {
-        this.setState({
-            pickerOpacity: 1
-        });
     }
 
     /**
@@ -77,6 +68,28 @@ export default class CurrencyList extends React.Component {
         this.setState({ data: newData });
     };
 
+    /**
+     * @description: to update the from and to currency for conversion
+     * @param: currency selction from the Flat list component
+     */
+    updateCurrencySelction = (currencySelection) => {
+        const currTargetId = this.state.currencyTargetId;
+        if(currTargetId === 'From'){
+            this.props.navigation.navigate('HomeScreen', {fromCurrency: currencySelection});
+        }else{
+            this.props.navigation.navigate('HomeScreen', {toCurrency: currencySelection});
+        }
+    }
+
+
+    static navigationOptions = ({ navigation }) => {
+        return {
+          title: `${navigation.getParam('targetCurrId')} Currecy` ,
+          headerRight: <HelpIcon />,
+        };
+      };
+
+     
     render() {
         if (this.state.loading) {
             return (
@@ -93,35 +106,28 @@ export default class CurrencyList extends React.Component {
                             source={require('../assets/icons/searchicon.png')} />
                     </TouchableOpacity>
                     <TextInput style={styles.SeachBar}
-                        autoFocus={true}
+                        autoFocus={false}
                         autoCorrect={true}
                         onChangeText={(text) => this.searchFilterFunction(text)}
                         placeholder='Search Here'></TextInput>
                 </View>
                 <FlatList
-                    data={this.state.data}
-                    renderItem={({ item }) => (
-                        <View style={{
-                            alignSelf: 'center', marginVertical: 10, borderBottomWidth: 0.2,
-                            flexDirection: 'row', justifyContent:'space-between', width:'90%'
-                        }}>
-                            <View style={{flexDirection:'row'}}>
-                                <Image source={{uri: item.picture.thumbnail}} 
-                                style={{height: 30, width: 30, marginHorizontal:10, borderRadius: 12}}  />
-                                <View style={{marginBottom: 3}}>
-                                    <Text style={{fontWeight: 'bold'}}>{item.name.first}  {item.name.last}</Text>
-                                    <Text>{item.email}</Text>
-                                </View>
-                            </View>
-                            <View>
-                                <TouchableOpacity>
-                                    <Text style={{alignSelf:"center", textAlign:'center'}}>></Text>
+                    
+                    data={Object.keys(Currencies)}
+                    renderItem={({item}) => 
+                            <View style={styles.listTextContainer}>
+                                <TouchableOpacity style={styles.touchContainer} onPress={() => {this.updateCurrencySelction(item)}}>
+                                    <Image style={styles.currecyIcon}source={require('../assets/icons/euro.png')}/>
+                                    <View style={{marginBottom: 5}}>
+                                        <Text style={styles.listText}>{item}</Text>
+                                        <Text style={{
+                                            fontSize: 15, color:'#2475B0' , fontWeight:'600',
+                                          }}>{Currencies[item]}</Text>
+                                    </View>
                                 </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
-                    keyExtractor={item => item.email}
-                    ItemSeparatorComponent={this.renderSeparator}
+                                </View>
+                            }
+                    keyExtractor={item => item}
                 />
             </View>
         );
@@ -134,17 +140,39 @@ const styles = StyleSheet.create({
         flex: 1
     },
     searchContainer: {
-        flexDirection: 'row', alignSelf: 'center', justifyContent: 'center',
-        backgroundColor:'#A4B0BD', borderRadius:12, marginTop: 3
+        flexDirection: 'row', 
+        alignSelf: 'center', 
+        justifyContent: 'center',
+        backgroundColor:'#A4B0BD',
+        borderRadius:12, 
+        marginTop: 3
     },
     SeachBar: {
-        width:'90%', alignSelf: 'center',paddingLeft: 20
+        width:'90%', 
+        alignSelf: 'center',
+        paddingLeft: 20
     },
     icon: {
         height: 22, width: 22, margin: 5
     },
-    item: {
-        fontSize: 18,
-        alignSelf: 'center'
+    listTextContainer:{
+        borderBottomWidth: 0.5, 
+        width: '90%',
+        alignSelf:'center',
+        height: 'auto'
     },
+    touchContainer:{
+        flexDirection: 'row',
+        alignItems:'center'
+    },
+    listText:{
+            fontSize: 22,
+            fontWeight: 'bold',
+            color: '#192A56'
+    },
+    currecyIcon:{
+        width: 30, 
+        height: 30,
+        marginRight: 10
+    }
 })

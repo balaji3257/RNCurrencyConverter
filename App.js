@@ -1,26 +1,29 @@
 import React from 'react';
 import {
-  StyleSheet, Platform
+Platform, Dimensions
 } from 'react-native';
 import { 
-  createAppContainer, 
-  createStackNavigator, 
-  createSwitchNavigator } from 'react-navigation';
+  createAppContainer, createStackNavigator, 
+  createSwitchNavigator, createDrawerNavigator } from 'react-navigation';
 
 import CurrencyList from './src/screens/CurrencyList';
 import SplashScreen from './src/screens/SplashScreen';
-// import CustomPickerAndroid from './src/components/Picker.android';
-// import CPickerIOS from './src/components/Picker.ios';
+import DummyAnime from './src/screens/DummyAnime';
 import HomeScreen from './src/screens/HomeScreen';
+import AboutUsScreen from './src/screens/AboutUsScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import BackToHome from './src/components/BackToHome';
+import Config from './app.json'
 
-// const PickerComponent = Platform.select({
-//   ios: CPickerIOS,
-//   android: CustomPickerAndroid
-// })
+
 const AppNavigator = createStackNavigator(
   {
     HomeScreen,
-    CurrencyList
+    CurrencyList,
+    AboutUsScreen,
+    SettingsScreen,
+    DummyAnime,
+    BackToHome
   },
   {
     initialRouteName: 'HomeScreen',
@@ -28,18 +31,34 @@ const AppNavigator = createStackNavigator(
       headerStyle: {
         backgroundColor: '#2475B0',
       },
+      title: Config.expo.name,
       headerTintColor: '#fff',
       headerTitleStyle: {
-        fontWeight: 'bold',
+        fontWeight: 'bold', flex:1, textAlign:'center', justifyContent:'center'
       },
-      
+
     }
   }
 );
 
+const WIDTH = Dimensions.get('window').width;
+const DrawerConfig = {
+  drawerWidth: WIDTH*0.83,
+}
+const DrawerNavigator = createDrawerNavigator({
+    App: AppNavigator ,
+    'About us' :{
+      screen: AboutUsScreen
+    },
+    'Settings':{
+      screen: SettingsScreen,
+      drawerLabel:'Settings'
+    }
+  },DrawerConfig,
+)
 const InitialNavigator = createSwitchNavigator({
   Splash: SplashScreen,
-  App: AppNavigator
+  Drawer: DrawerNavigator
 });
 
 const App = createAppContainer(InitialNavigator);

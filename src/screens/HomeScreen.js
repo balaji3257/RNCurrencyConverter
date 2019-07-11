@@ -1,49 +1,12 @@
 import React from 'react';
 import {
-  StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, Picker, Modal,
+  StyleSheet, Text, View, TextInput, TouchableOpacity, 
+  Image, Alert, ToastAndroid, Platform,
 } from 'react-native';
 
+import HelpIcon from '../components/Help';
+import HamburgerMenu from '../components/Hamburger';
 
-class HelpIcon extends React.Component{
-    constructor(props){
-      super(props);
-      this.state = {
-        modalVisible: false,
-      }
-    }
-
-  /**
-   * @description: set the visible propperty for the Modal window
-   */
-  setModalVisible(visible) {
-    this.setState({ modalVisible: visible });
-  }
-  render(){
-    return(
-      <View>
-        <View style={styles.titleBar}>
-          <TouchableOpacity onPress={ () => { this.setModalVisible(!this.state.modalVisible) }}>
-            <Text style={styles.helpIcon}>Help</Text>
-          </TouchableOpacity>
-        </View>
-        <View>
-          <Modal animationType="slide" transparent={false}
-            visible={this.state.modalVisible}>
-            <View style={{ marginTop: 22 }}>
-              <View>
-                <TouchableOpacity onPress={ () => {
-                  this.setModalVisible(!this.state.modalVisible);
-                }}>
-                  <Text style={styles.closeButton}>close</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
-        </View>
-      </View>
-    )
-  }
-}
 
 export default class HomeScreen extends React.Component {
 
@@ -55,31 +18,48 @@ export default class HomeScreen extends React.Component {
       isLoading: true,
       globalCurrencyRate: null,
       modalVisible: false,
-      fromCurrency: 'USD',
-      toCurrency: "INR"
+      mainFromCurrency: 'INR',
+      mainToCurrency: 'USD',
+      isConversionCompleted: false
     }
-    this.convButtonPressed = this.convButtonPressed.bind(this);
   }
 
-  componentDidMount() {
-    // fetch the currency coinversion rates
-    this.getRealTimeCurrencyConversionRates();
-  }
+    componentDidMount(){
+      this.getRealTimeCurrencyConversionRates(this.state.mainFromCurrency);
+    }
 
-  /**
-   * @description: used to handle the input value from user input field
-   */
-  handleChangeInput = (text) => {
-    this.setState({ inrValue: text })
-  }
+    componentWillReceiveProps(props) {
+      this.manipulateCurrencies(props);
+    }
+
+    /**
+     * @description: toast handler 
+     */
+    toastHandler = () => {
+      if(Platform.OS === 'ios'){
+        Alert.alert("Swapped Currencies")
+      }else{
+        ToastAndroid.show('Swapped Currencies', ToastAndroid.LONG);
+      }
+    }
+
+    /**
+     * @description: used to handle the input value from user input field
+     */
+    handleChangeInput = (text) => {
+      this.setState({ inrValue: text })
+    }
 
   /**
    * @description : realtime currency conversion rates are fetch from 'api.exchangeratesapi.io'
    */
-  getRealTimeCurrencyConversionRates = async () => {
-    return fetch('https://api.exchangeratesapi.io/latest?base=INR')
+  getRealTimeCurrencyConversionRates =  (baseCurrency) => {
+    const url = `https://api.exchangeratesapi.io/latest?base=${baseCurrency}`
+    console.log(url)
+     fetch(url)
       .then((response) => response.json())
       .then((responseJson) => {
+        console.log(JSON.stringify(responseJson))
         this.setState({
           globalCurrencyRate: responseJson.rates,
         });
@@ -91,29 +71,74 @@ export default class HomeScreen extends React.Component {
   /**
    * @description: Convert the currency values for the given currencies
    */
-  convButtonPressed = (currencyType) => {
-    var currencyRate = 0.00
-    if ((this.state.inrValue === 0) || (isNaN(this.state.inrValue))) {
-      Alert.alert("Please enter some amount in 'INR' format")
-    } else {
-      switch (currencyType) {
-        case 'USD':
-          currencyRate = this.state.globalCurrencyRate['USD']
-          break;
-        case 'AUD':
-          currencyRate = this.state.globalCurrencyRate['AUD']
-          break;
-        case 'EUR':
-          currencyRate = this.state.globalCurrencyRate['EUR']
-          break;
-      }
-      this.setState({ conversionResult: parseFloat(Number(this.state.inrValue) * currencyRate).toFixed(4).toString() })
+  convButtonPressed = () => {
+    const enteredCurrencyValue = parseInt(this.state.inrValue, 10);
+    const currencyConversionRates  = this.state.globalCurrencyRate;
+    const targetCurrencySymbol = this.state.mainToCurrency;
+    const targetCurrencyValue = currencyConversionRates[targetCurrencySymbol]
+    this.setState({
+      conversionResult : parseFloat(enteredCurrencyValue * targetCurrencyValue).toFixed(3),
+      isConversionCompleted: true
+    })
+  }
+
+  
+  /**
+   * @description: helps to get from and to currency currecny list sreen and updates the conversion 
+   *                rates according to the base currency
+   */
+  manipulateCurrencies = (props) =>{
+    const currentFromCurrency = this.state.mainFromCurrency;
+    const currentToCurrency = this.state.mainFromCurrency;
+    const possibleNewToCurrency = props.navigation.getParam('toCurrency', 'USD')
+    const possibleNewFromCurrency = props.navigation.getParam('fromCurrency', 'INR');
+    if(currentFromCurrency != possibleNewFromCurrency) {
+      // use the current from currency    
+      this.setState({
+        mainFromCurrency: possibleNewFromCurrency
+      })
+      this.getRealTimeCurrencyConversionRates(possibleNewFromCurrency);
+    }
+    if(currentToCurrency != possibleNewToCurrency){
+      this.setState({
+        mainToCurrency: possibleNewToCurrency
+      })
     }
   }
 
-  static navigationOptions ={
-    headerRight: <HelpIcon/>,
+  /**
+   * @description: swap the from and to currencies
+   */
+  swapButtonPressed = () => {
+      this.toastHandler()
+      const changingFromCurrency = this.state.mainFromCurrency
+      this.setState({
+        mainFromCurrency: this.state.mainToCurrency,
+        mainToCurrency: changingFromCurrency
+      })
+      this.getRealTimeCurrencyConversionRates(this.state.mainToCurrency);
+  }
+
+  _returnSubStringConversion = () => {
+    if(this.state.isConversionCompleted){
+      const currencyConversionRates  = this.state.globalCurrencyRate;
+      const targetCurrencySymbol = this.state.mainToCurrency;
+      const targetCurrencyValue = currencyConversionRates[targetCurrencySymbol]
+      return(
+        <View>
+          <Text style={styles.resultCurrenyText}>{`1 ${this.state.mainFromCurrency} =  ${parseFloat(targetCurrencyValue).toFixed(3)} ${this.state.mainToCurrency}`}</Text>
+        </View>
+      )
+    }
+  }
+
+  static navigationOptions = ({ navigation }) => {
+    return{
+      headerRight: <HelpIcon />,
+      headerLeft: <HamburgerMenu navigation = {navigation}/>
+    }
   };
+
   /**
    * @description: Render Function starts here
    */
@@ -124,62 +149,61 @@ export default class HomeScreen extends React.Component {
           <TextInput style={styles.inputText} placeholder="Enter amount here" keyboardType="numeric"
             onChangeText={this.handleChangeInput} />
         </View>
-
-        <View style={styles.pickerContainer}>
+        <View style={[styles.pickerContainer, styles.fromFieldSpecific]}>
           <Text style={styles.fromText}>FROM</Text>
-          <TouchableOpacity style={styles.languagePicker} onPress={ ()=> {this.props.navigation.navigate('CurrencyList')}} >
-            <Text style={styles.languagePicker}>{this.state.fromCurrency}</Text>
+          <TouchableOpacity 
+                            style={styles.languagePicker} 
+                            onPress={() => { this.props.navigation.navigate('CurrencyList', {targetCurrId:'From'}) }} >
+            <Text   style={styles.languagePicker}>{this.state.mainFromCurrency}</Text>
           </TouchableOpacity>
         </View>
-
+    
         <View>
-          <TouchableOpacity onPress={() => { this.rotateButtonPressed }}>
+          <TouchableOpacity  onPress={() => {this.swapButtonPressed()}} >
             <Image source={require('../assets/icons/swap.png')}
-              style={styles.currRotateButton} />
+                  style={styles.currRotateButton} />
+                  
           </TouchableOpacity>
         </View>
 
-        <View style={[styles.pickerContainer, { alignSelf: 'flex-end' }]}>
-        <TouchableOpacity style={styles.languagePicker} onPress={ ()=> {this.props.navigation.navigate('CurrencyList')}} >
-            <Text style={styles.languagePicker}>{this.state.toCurrency}</Text>
+        <View style={[styles.pickerContainer, styles.toFieldSpecific]}>
+          <TouchableOpacity  
+                             style={styles.languagePicker}
+                             
+                             onPress={() => { this.props.navigation.navigate('CurrencyList',{targetCurrId:'To'}) }} >
+            <Text style={styles.languagePicker}>{this.state.mainToCurrency}</Text>
           </TouchableOpacity>
           <Text style={styles.fromText}>TO</Text>
         </View>
 
         <TouchableOpacity style={styles.convertButtonContainer}
-          onPress={() => this.convButtonPressed('USD')} >
+          onPress={() => this.convButtonPressed()} >
           <Text style={styles.buttonText}>CONVERT</Text>
         </TouchableOpacity>
-
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultText}>2344.99 EUR</Text>
-          <Text style={styles.resultCurrenyText}>1 USD = 0.90 EUR</Text>
+        
+       <View style={{ height:'auto', justifyContent:'center', alignItems:'center'}}>
+          <View style ={
+            {flexDirection:'row',
+               alignItems:'baseline', marginTop: 50
+            }}>
+            <Text style={{fontSize: 55, fontWeight: 'bold', color: '#ff8f00'}}>{this.state.conversionResult} </Text>
+            <Text style={{fontSize:18, fontWeight: 'bold', color: '#ff8f00', paddingBottom: 9}} >{this.state.mainToCurrency}</Text>
+          </View>
+          {this._returnSubStringConversion()}
         </View>
-
+      
       </View>
-
-
     );
   }
 }
 
 const styles = StyleSheet.create({
-  titleBar: {
-    backgroundColor: '#2475B0',justifyContent: 'center'
-  },
-  helpIcon: {
-    color: 'white', 
-    fontSize: 18, 
-    textAlign: 'center', 
-    textAlignVertical: 'center', 
-    padding: 14, 
-    fontWeight:'bold'
-  },
   container: {
     flex: 1, backgroundColor: '#fff', alignItems: 'center'
   },
   inputContainer: {
-    marginVertical: 40
+    marginTop: 60, 
+    marginBottom: 70
   },
   inputText: {
     width: 350,
@@ -190,26 +214,57 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   languagePicker: {
-    flex: 3, textAlignVertical:'center', textAlign:'center', fontWeight: 'bold', fontSize: 18
+    flex: 3,
+    fontWeight: 'bold',
+    paddingLeft: 10,
+    paddingRight: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+    lineHeight: 44,
+    textAlign: 'center'
   },
   lanItem: {
     textAlign: 'center', textAlignVertical: 'center'
   },
   pickerContainer: {
-    width: '70%', flexDirection: 'row', backgroundColor: '#e0f7fa'
-    , alignSelf: 'flex-start', borderRadius: 25, height: 45
-
+    width: '70%',
+    flexDirection: 'row',
+    height: 45,
+    alignItems: 'center',
+    borderRightWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#25CCF7"
   },
   fromText: {
-    flex: 1, textAlign: 'center', textAlignVertical: 'center', fontSize: 23,
-    fontWeight: '500', backgroundColor: '#25CCF7', color: '#fff'
+    paddingLeft: 10,
+    paddingRight: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+    lineHeight: 44,
+    color: 'white',
+    backgroundColor: '#25CCF7',
+    borderColor: "#25CCF7"
+  },
+  fromFieldSpecific:{
+    alignSelf: 'flex-start',
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  toFieldSpecific:{ 
+    alignSelf: 'flex-end', borderLeftWidth: 1, borderTopLeftRadius: 20, borderBottomLeftRadius: 20 
   },
   currRotateButton: {
     width: 30, height: 30, margin: 20
   },
   convertButtonContainer: {
-    marginTop: 40, backgroundColor: '#2475B0', width: '75%', justifyContent: 'center', alignItems: 'center'
-    , height: 60, borderRadius: 25, flexDirection: 'row'
+    marginTop: 40, 
+    backgroundColor: '#2475B0', 
+    width: '75%', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: 44, 
+    borderRadius: 25, 
   },
   buttonText: {
     fontSize: 27,
@@ -227,21 +282,14 @@ const styles = StyleSheet.create({
   resultContainer: {
     marginTop: 50,
     width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
   },
   resultText: {
-    fontSize: 45, fontWeight: '600', color: '#ff8f00'
+    fontSize: 45, fontWeight: '600', color: '#ff8f00',
   },
   resultCurrenyText: {
-    fontSize: 18, fontWeight: 'bold', fontStyle: 'italic'
+    fontSize: 20, fontWeight: 'bold', fontStyle: 'italic'
   },
-
-  closeButton: {
-    fontSize: 30,
-    fontWeight: 'bold', textAlign: 'right', marginHorizontal: 30
-  }, statusBar: {
+   statusBar: {
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
