@@ -18,7 +18,7 @@ export default class Hamburger extends React.Component {
         <TouchableOpacity onPress={this.toggleDrawer.bind(this)}>
           {/*Donute Button Image */}
           <Image
-            source={require('../assets/icons/hambMenu.png')}
+            source={require('../assets/icons/menu.png')}
             style={styles.helpIcon}
           />
         </TouchableOpacity>
@@ -31,9 +31,10 @@ export default class Hamburger extends React.Component {
 
   const styles = StyleSheet.create({
     helpIcon:{
-        height: 40, 
-        width: 40, 
-        marginTop: 10
+        height: 30, 
+        width: 30, 
+        marginLeft: 8,
+        marginTop:8
     },
     titleBar: {
       backgroundColor: '#2475B0', justifyContent: 'center'

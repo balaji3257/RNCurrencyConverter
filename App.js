@@ -55,6 +55,10 @@ const DrawerNavigator = createDrawerNavigator({
       drawerLabel:'Settings'
     }
   },DrawerConfig,
+  {
+    contentComponent: "https://medium.com/@arunkmoury/customize-drawer-of-react-navigation-like-champ-9b42df489d42"
+  }
+  
 )
 const InitialNavigator = createSwitchNavigator({
   Splash: SplashScreen,

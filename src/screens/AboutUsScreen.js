@@ -2,37 +2,38 @@
 
 import React from 'react';
 import {
-  StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, Modal, ToastAndroid, Platform,
-  Animated
+  StyleSheet, Text, View, TouchableOpacity, Dimensions
 } from 'react-native';
-import HamburgerMenu from '../components/Hamburger';
+
+import Header from '../components/Header';
+
+const WIDTH = Dimensions.get('window').width
+
 export default class AboutUsScreen extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-       
-      }
-    }
-    
+   
     render() {
-      return (
-        <View style={styles.container}>
-          <HamburgerMenu navigation={this.props.navigation}/>
-          <Text style={styles.textDesign}>About us page</Text>
-        </View>
-      )
+        return(
+          <View>
+              <Header 
+              title="About us"
+              navigation={this.props.navigation}
+              />
+            <View style={styles.container}>
+              <Text style={{marginTop: 100,fontWeight:'bold'}}>Coming soon..</Text>
+            </View>
+          </View>
+          
+        )
     }
   }
 
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    textDesign: {
-        fontWeight: "bold",
-        fontSize: 23
+  const styles = StyleSheet.create({
+    container:{
+      flex:1,
+      justifyContent:'center',
+      alignItems:'center'
     }
-});
+  });
+
+
+
