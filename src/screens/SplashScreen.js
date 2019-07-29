@@ -11,7 +11,7 @@ export default class CustomPickerIOS extends React.Component{
         return new Promise((resolve) =>{
             setTimeout(
                 () => {resolve('result')},
-                1000
+                1500
             )
         })
     }
@@ -28,9 +28,9 @@ export default class CustomPickerIOS extends React.Component{
         return(
             <View style={styles.container}>
                 <Image 
-                    style={{height: 100, width: 100}}
-                source={{uri:
-              'https://aboutreact.com/wp-content/uploads/2018/07/logosmalltransparen.png'}}/>
+                    style={{height: 300, width: 350}}
+                    source = {require('../assets/icons/splash_currencyIcon.jpg')}
+               />
             </View>
         );
     }
@@ -39,7 +39,7 @@ export default class CustomPickerIOS extends React.Component{
 
 const styles = StyleSheet.create({
   container:{
-      backgroundColor:'#DAE0E2', flex:1, 
+      backgroundColor:'#fff', flex:1, 
       justifyContent: 'center', alignItems:'center'
   },
   splashText:{

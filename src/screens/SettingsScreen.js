@@ -36,10 +36,6 @@ export default class SettingsScreen extends React.Component {
     render() {
         return(
         <View style={styles.container}>
-            <Header 
-            title="Settings"
-            navigation={this.props.navigation}
-            />
             
             <View style={styles.historyContainer}>
                 <View>

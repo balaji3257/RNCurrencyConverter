@@ -1,11 +1,10 @@
 import React from 'react';
 import {
   StyleSheet, Text, View, TextInput, TouchableOpacity, 
-  Image, Alert, ToastAndroid, Platform, SectionList, ScrollView, FlatList,Dimensions, Keyboard
+  Image, Alert, ToastAndroid, Platform, ScrollView, FlatList,Dimensions, Keyboard
 } from 'react-native';
 
-import HelpIcon from '../components/Help';
-import HamburgerMenu from '../components/Hamburger';
+
 
 
 
@@ -21,10 +20,19 @@ export default class HomeScreen extends React.Component {
       modalVisible: false,
       mainFromCurrency: 'INR',
       mainToCurrency: 'USD',
-      isConversionCompleted: false
+      isConversionCompleted: false,
+      isHiddenPopularSection: false,
+      errorColor: '#25CCF7'
     }
   }
 
+    _toggleBorderColorToError = () =>{
+      this.setState({errorColor: '#E44236'})
+    }
+
+    _toggleBorderColorToNormal = () =>{
+      this.setState({errorColor: '#25CCF7'})
+    }
     componentDidMount(){
       this.getRealTimeCurrencyConversionRates(this.state.mainFromCurrency);
     }
@@ -49,6 +57,7 @@ export default class HomeScreen extends React.Component {
      */
     handleChangeInput = (text) => {
       this.setState({ inrValue: text })
+      this._toggleBorderColorToNormal()
     }
 
   /**
@@ -75,7 +84,7 @@ export default class HomeScreen extends React.Component {
   convButtonPressed = () => {
     if(this.state.mainFromCurrency !== this.state.mainToCurrency){
       if((this.state.inrValue === 0) || (isNaN(this.state.inrValue))  ){
-        Alert.alert("Please enter amount in number format !")
+          this._toggleBorderColorToError();
       }else{
           Keyboard.dismiss();
           const enteredCurrencyValue = parseInt(this.state.inrValue, 10);
@@ -83,9 +92,9 @@ export default class HomeScreen extends React.Component {
           const targetCurrencySymbol = this.state.mainToCurrency;
           const targetCurrencyValue = currencyConversionRates[targetCurrencySymbol]
           const covResult = parseFloat(enteredCurrencyValue * targetCurrencyValue).toFixed(3);
-          
+          this.setState({isHiddenPopularSection: true})
           this.setState({
-            conversionResult : isNaN(covResult) ? Alert.alert("enter amount for conversion") : covResult,
+            conversionResult : isNaN(covResult) ? this._toggleBorderColorToError() : covResult,
             isConversionCompleted: true
           })
         }
@@ -97,7 +106,7 @@ export default class HomeScreen extends React.Component {
   
   /**
    * @description: helps to get from and to currency currecny list sreen and updates the conversion 
-   *                rates according to the base currency
+   *                 rates according to the base currency
    */
   manipulateCurrencies = (props) =>{
     const currentFromCurrency = this.state.mainFromCurrency;
@@ -128,7 +137,6 @@ export default class HomeScreen extends React.Component {
       this.setState({
         mainFromCurrency: this.state.mainToCurrency,
         mainToCurrency: changingFromCurrency,
-        isConversionCompleted: false,
         conversionResult: '0.00'
       })
       this.getRealTimeCurrencyConversionRates(this.state.mainToCurrency);
@@ -161,42 +169,46 @@ export default class HomeScreen extends React.Component {
       {
         name:'CAD',
         desc:'Canadian dollar',
-        thumbnail:'../assets/flags/canada.png',
+        thumbnail:require('../assets/flags/canada.png'),
         currentRate:null
       },
       {
         name:'GBP',
         desc:'Pound sterling',
-        thumbnail:'../assets/flags/united-kingdom.png',
+        thumbnail:require('../assets/flags/united-kingdom.png'),
         currentRate:null
       },
       {
         name:'INR',
         desc:'Indian rupees',
-        thumbnail:'../assets/flags/india.png',
+        thumbnail:require('../assets/flags/india.png'),
         currentRate:null
       },
       {
         name:'USD',
         desc:'United States dollar',
-        thumbnail:'../assets/flags/united-states-of-america.png',
+        thumbnail:require('../assets/flags/united-states-of-america.png'),
         currentRate:null
       },
       {
         name:'AUD',
         desc:'Australian dollar',
-        thumbnail:'../assets/flags/australia.png',
+        thumbnail:require('../assets/flags/australia.png'),
         currentRate:null
       }
     ]
-    if(this.state.isConversionCompleted)
+    if(this.state.isConversionCompleted && this.state.isHiddenPopularSection)
     {
       return(
         <View style={{overflow:'hidden', flex:1, width: '98%', borderWidth: 0.5, borderColor: '25CCF7', borderRadius:12, }}>
-          <View style={{backgroundColor:'#25CCF7',}}>
+          <View style={{backgroundColor:'#25CCF7',flexDirection: 'row', justifyContent:'space-between'}}>
             <Text style={{fontWeight:'bold', fontSize:16, 
-                        textAlign:'center', color:'#fff',
-                    }}>Other Currencies</Text></View>
+                        textAlign:'center', color:'#fff',marginLeft:10
+                    }}>Other popular currencies</Text>
+                    <TouchableOpacity onPress={() => {this.setState({isHiddenPopularSection: !this.state.isHiddenPopularSection})}}>
+                          <Text style={{marginRight: 10, fontSize: 14, fontWeight:'bold'}}>Hide</Text>
+                    </TouchableOpacity>
+            </View>
         <ScrollView>
         <FlatList
               data={popularCurrencies}
@@ -205,7 +217,7 @@ export default class HomeScreen extends React.Component {
                         <TouchableOpacity style={styles.touchContainer}>
                           <View style={{flexDirection:'row'}}>
                             <Image style={styles.currecyIcon}
-                                    source={require('../assets/flags/canada.png')}/>
+                                    source={item.thumbnail}/>
                             <View style={{marginBottom: 5, marginLeft:15}}>
                                 <Text style={[styles.listText,{}]}>{item.desc}</Text>
                                 <Text style={{
@@ -214,10 +226,10 @@ export default class HomeScreen extends React.Component {
                             </View>
                             </View>
                             <View>
-                              <Text style={{fontWeight:'bold',fontSize:16,fontStyle:'italic'}}> 123.11</Text>
+                              <Text style={{fontWeight:'bold',fontSize:16,fontStyle:'italic'}}> ￡ 123.11</Text>
                             </View>
                         </TouchableOpacity>
-                       
+                      
                         </View>
                     }
               keyExtractor={item => item.name}
@@ -243,12 +255,12 @@ export default class HomeScreen extends React.Component {
     
   }
 
-  static navigationOptions = ({ navigation }) => {
-    return{
-      headerRight: <HelpIcon />,
-      headerLeft: <HamburgerMenu navigation = {navigation}/>
-    }
-  };
+  // static navigationOptions = ({ navigation }) => {
+  //   return{
+  //     headerRight: <HelpIcon />,
+  //     headerLeft: <HamburgerMenu navigation = {navigation}/>
+  //   }
+  // };
 
   /**
    * @description: Render Function starts here
@@ -257,7 +269,7 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.inputText} placeholder="Enter amount here" keyboardType="numeric"
+          <TextInput style={[styles.inputText,{borderColor:this.state.errorColor}]} placeholder="Enter amount here" keyboardType="numeric"
             onChangeText={this.handleChangeInput} />
         </View>
       
@@ -320,8 +332,6 @@ const styles = StyleSheet.create({
   inputText: {
     width: Dimensions.get('window').width * 0.8,
     borderBottomWidth: 1,
-    opacity:0.5,
-    borderColor: '#0A79DF',
     textAlign: 'center',
     fontSize: 25,
     fontWeight: 'bold'

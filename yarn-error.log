@@ -1,0 +1,49 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.17.0/libexec/bin/yarn.js add expo
+
+PATH: 
+  /Library/Frameworks/Python.framework/Versions/3.7/bin:/Users/balaji/Documents/Tools/apache-maven-3.6.0/bin:/Library/Java/JavaVirtualMachines/jdk1.8.0_201.jdk/Contents/Home/bin:/Users/balaji/Library/Android/sdk/tools:/Users/balaji/Library/Android/sdk/platform-tools:/Users/balaji/BatchFiles/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/balaji/anaconda3/bin:/Users/balaji/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.7/bin:/Users/balaji/Documents/Tools/apache-maven-3.6.0/bin:/Library/Java/JavaVirtualMachines/jdk1.8.0_201.jdk/Contents/Home/bin:/Users/balaji/Library/Android/sdk/tools:/Users/balaji/Library/Android/sdk/platform-tools:/Users/balaji/BatchFiles/bin
+
+Yarn version: 
+  1.17.0
+
+Node version: 
+  10.15.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: ENFILE: file table overflow, copyfile '/Users/balaji/Library/Caches/Yarn/v4/npm-core-js-2.6.9-6b4b214620c834152e179323727fc19741b084f2/node_modules/core-js/library/modules/es6.number.min-safe-integer.js' -> '/Users/balaji/workspace/Development/ReactNative/ReactNativeBootCamp/08/CurrencyConverter/node_modules/core-js/library/modules/es6.number.min-safe-integer.js'
+
+npm manifest: 
+  {
+    "main": "node_modules/expo/AppEntry.js",
+    "scripts": {
+      "start": "expo start",
+      "android": "expo start --android",
+      "ios": "expo start --ios",
+      "web": "expo start --web",
+      "eject": "expo eject"
+    },
+    "dependencies": {
+      "expo": "^33.0.0",
+      "react": "16.8.3",
+      "react-dom": "^16.8.6",
+      "react-native": "https://github.com/expo/react-native/archive/sdk-33.0.0.tar.gz",
+      "react-native-gesture-handler": "^1.3.0",
+      "react-native-swiper": "^1.5.14",
+      "react-native-web": "^0.11.4",
+      "react-navigation": "^3.11.0"
+    },
+    "devDependencies": {
+      "babel-preset-expo": "^5.1.1"
+    },
+    "private": true
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

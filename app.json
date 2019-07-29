@@ -1,28 +1,11 @@
+
 {
+  "displayName": "Currency Converter",
+  "name": "CurrencyCOnverter",
   "expo": {
-    "name": "Currency Converter",
-    "slug": "CurrencyConverter",
-    "privacy": "public",
+    "name": "My app",
+    "slug": "my-app",
     "sdkVersion": "33.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "splash": {
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    }
+    "privacy": "public"
   }
 }

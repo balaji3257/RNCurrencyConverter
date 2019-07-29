@@ -9,41 +9,40 @@ import {
 
 const Currencies =
     [
-      { name: 'CAD', desc:'Canadian dollar'},
-      { name: 'HKD', desc:'Hong Kong dollar'},
-      { name: 'ISK', desc:'Icelandic krona'},
-      { name: 'PHP', desc:'Philippine peso'},
-      { name: 'DKK', desc:'Danish krone'},
-      { name: 'HUF', desc:'Hungarian forint'},
-      { name: 'CZK', desc:'Czech koruna'},
-      { name: 'GBP', desc:'Pound sterling'},
-      { name: 'RON', desc:'Romanian leu'},
-      { name: 'SEK', desc:'Swedish krona'},
-      { name: 'IDR', desc:'Indonesian rupiah'},
-      { name: 'INR', desc:'Indian rupee'},
-      { name: 'BRL', desc:'Brazilian real'},
-      { name: 'RUB', desc:'Russian ruble'},
-      { name: 'HRK', desc:'Croatian kuna'},
-      { name: 'JPY', desc:'Japanese yen'},
-      { name: 'THB', desc:'Thai baht'},
-      { name: 'CHF', desc:'Swiss franc'},
-      { name: 'EUR', desc:'European euro'},
-      { name: 'MYR', desc:'Malaysian ringgit'},
-      { name: 'BGN', desc:'Bulgarian lev'},
-      { name: 'TRY', desc:'Turkish lira'},
-      { name: 'CNY', desc:'Chinese Yuan Renminbi'},
-      { name: 'NOK', desc:'Norwegian krone'},
-      { name: 'NZD', desc:'New Zealand dollar'},
-      { name: 'ZAR', desc:'South African rand'},
-      { name: 'USD', desc:'United States dollar'},
-      { name: 'MXN', desc:'Mexican peso'},
-      { name: 'SGD', desc:'Singapore dollar'},
-      { name: 'AUD', desc:'Australian dollar'},
-      { name: 'ILS', desc:'Israeli new shekel'},
-      { name: 'KRW', desc:'South Korean won'},
-      { name: 'PLN', desc:'Polish zloty'}
+      { thumbnail: require('../assets/flags/canada.png'),name: 'CAD', desc:'Canadian dollar'},
+      { thumbnail: require('../assets/flags/hong-kong.png'),name: 'HKD', desc:'Hong Kong dollar'},
+      { thumbnail: require('../assets/flags/iceland.png'),name: 'ISK', desc:'Icelandic krona'},
+      { thumbnail: require('../assets/flags/philippines.png'),name: 'PHP', desc:'Philippine peso'},
+      { thumbnail: require('../assets/flags/denmark.png'),name: 'DKK', desc:'Danish krone'},
+      { thumbnail: require('../assets/flags/hungary.png'),name: 'HUF', desc:'Hungarian forint'},
+      { thumbnail: require('../assets/flags/czech-republic.png'),name: 'CZK', desc:'Czech koruna'},
+      { thumbnail: require('../assets/flags/united-kingdom.png'),name: 'GBP', desc:'Pound sterling'},
+      { thumbnail: require('../assets/flags/romania.png'),name: 'RON', desc:'Romanian leu'},
+      { thumbnail: require('../assets/flags/sweden.png'),name: 'SEK', desc:'Swedish krona'},
+      { thumbnail: require('../assets/flags/indonesia.png'),name: 'IDR', desc:'Indonesian rupiah'},
+      { thumbnail: require('../assets/flags/india.png'),name: 'INR', desc:'Indian rupee'},
+      { thumbnail: require('../assets/flags/brazil.png'),name: 'BRL', desc:'Brazilian real'},
+      { thumbnail: require('../assets/flags/russia.png'),name: 'RUB', desc:'Russian ruble'},
+      { thumbnail: require('../assets/flags/croatia.png'),name: 'HRK', desc:'Croatian kuna'},
+      { thumbnail: require('../assets/flags/japan.png'),name: 'JPY', desc:'Japanese yen'},
+      { thumbnail: require('../assets/flags/thailand.png'),name: 'THB', desc:'Thai baht'},
+      { thumbnail: require('../assets/flags/switzerland.png'),name: 'CHF', desc:'Swiss franc'},
+      { thumbnail: require('../assets/flags/european-union.png'),name: 'EUR', desc:'European euro'},
+      { thumbnail: require('../assets/flags/malaysia.png'),name: 'MYR', desc:'Malaysian ringgit'},
+      { thumbnail: require('../assets/flags/bulgaria.png'),name: 'BGN', desc:'Bulgarian lev'},
+      { thumbnail: require('../assets/flags/turkey.png'),name: 'TRY', desc:'Turkish lira'},
+      { thumbnail: require('../assets/flags/china.png'),name: 'CNY', desc:'Chinese Yuan Renminbi'},
+      { thumbnail: require('../assets/flags/norway.png'),name: 'NOK', desc:'Norwegian krone'},
+      { thumbnail: require('../assets/flags/new-zealand.png'),name: 'NZD', desc:'New Zealand dollar'},
+      { thumbnail: require('../assets/flags/south-africa.png'),name: 'ZAR', desc:'South African rand'},
+      { thumbnail: require('../assets/flags/united-states-of-america.png'),name: 'USD', desc:'United States dollar'},
+      { thumbnail: require('../assets/flags/mexico.png'),name: 'MXN', desc:'Mexican peso'},
+      { thumbnail: require('../assets/flags/singapore.png'),name: 'SGD', desc:'Singapore dollar'},
+      { thumbnail: require('../assets/flags/australia.png'),name: 'AUD', desc:'Australian dollar'},
+      { thumbnail: require('../assets/flags/israel.png'),name: 'ILS', desc:'Israeli new shekel'},
+      { thumbnail: require('../assets/flags/south-korea.png'),name: 'KRW', desc:'South Korean won'},
+      { thumbnail: require('../assets/flags/portugal.png'),name: 'PLN', desc:'Polish zloty'}
     ]
-
 
 
 export default class CurrencyList extends React.Component {
@@ -83,9 +82,9 @@ export default class CurrencyList extends React.Component {
     updateCurrencySelction = (currencySelection) => {
         const currTargetId = this.state.currencyTargetId;
         if(currTargetId === 'From'){
-            this.props.navigation.navigate('HomeScreen', {fromCurrency: currencySelection.desc});
+            this.props.navigation.navigate('HomeScreen', {fromCurrency: currencySelection.name});
         }else{
-            this.props.navigation.navigate('HomeScreen', {toCurrency: currencySelection.desc});
+            this.props.navigation.navigate('HomeScreen', {toCurrency: currencySelection.name});
         }
     }
 
@@ -129,7 +128,6 @@ export default class CurrencyList extends React.Component {
                             placeholder='Search Here'>
                             
                 </TextInput>
-                
                 </View>
             )
         }
@@ -153,7 +151,7 @@ export default class CurrencyList extends React.Component {
                             <View style={styles.listTextContainer}>
                                 <TouchableOpacity style={styles.touchContainer} onPress={() => {this.updateCurrencySelction(item)}}>
                                     <View  style={{flexDirection:'row',alignItems:'center'}}>
-                                        <Image style={styles.currecyIcon}source={require('../assets/flags/australia.png')}/>
+                                        <Image style={styles.currecyIcon}source={item.thumbnail}/>
                                         <View style={{marginBottom: 5}}>
                                             <Text style={styles.listText}>{item.desc}</Text>
                                         </View>

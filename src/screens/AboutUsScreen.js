@@ -14,10 +14,6 @@ export default class AboutUsScreen extends React.Component {
     render() {
         return(
           <View>
-              <Header 
-              title="About us"
-              navigation={this.props.navigation}
-              />
             <View style={styles.container}>
               <Text style={{marginTop: 100,fontWeight:'bold'}}>Coming soon..</Text>
             </View>
